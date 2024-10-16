@@ -1,0 +1,55 @@
+/* sCSS */
+
+.container {
+  display: flex;
+  justify-content: center;
+  padding: 0 10rem;
+  flex-wrap: wrap;
+  margin-top: 5rem;
+  gap: 2rem;
+}
+
+.links {
+  background-color: #0a66c2;
+  border-radius: 8px;
+  border-style: none;
+  box-sizing: border-box;
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-block;
+  font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial,
+    sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  height: 40px;
+  line-height: 20px;
+  list-style: none;
+  margin: 0;
+  outline: none;
+  padding: 10px 16px;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+  transition: color 100ms;
+  vertical-align: baseline;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.links:hover,
+.links:focus {
+  background-color: #16437e;
+  color: #ffffff;
+}
+
+.links:active {
+  background: #09223b;
+  color: rgb(255, 255, 255, 0.7);
+}
+
+.links:disabled {
+  cursor: not-allowed;
+  background: rgba(0, 0, 0, 0.08);
+  color: rgba(0, 0, 0, 0.3);
+}
