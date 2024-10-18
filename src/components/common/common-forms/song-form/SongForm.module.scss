@@ -1,0 +1,49 @@
+/// ========================================
+/// ========= Form Validation Scss =========
+/// ========================================
+.form {
+  .form_container {
+    flex-direction: row !important;
+  }
+  .button_container {
+    align-items: center;
+    padding-left: 6rem;
+    flex-direction: row !important;
+    gap: 2rem;
+    margin: 3rem 0;
+  }
+}
+
+// @media screen and (max-width: 550px) {
+//   .container {
+//     width: 100vw;
+//     padding-left: 0;
+//     form {
+//       .messageContainer {
+//         .message {
+//           textarea {
+//             width: 39rem;
+//             height: 15rem;
+//           }
+//         }
+//       }
+//     }
+//   }
+// }
+// @media screen and (max-width: 400px) {
+//   .container {
+//     width: 100vw;
+//     padding-left: 0;
+//     form {
+//       .messageContainer {
+//         margin: 2rem 3rem 2rem 2.5rem;
+//         .message {
+//           textarea {
+//             width: 37rem;
+//             height: 15rem;
+//           }
+//         }
+//       }
+//     }
+//   }
+// }

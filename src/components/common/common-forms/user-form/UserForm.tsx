@@ -36,42 +36,49 @@ const UserForm = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className={style.form}>
-      <h1 className={style.heading}>User Form</h1>
+      <h1>User Form</h1>
+      <div className={style.form_container}>
+        <div>
+          <label>User Name</label>
+          <input
+            type="text"
+            placeholder="User Name"
+            {...register("username", { required: true })}
+          />
+          {errors.username && <span className={style.error}>Required</span>}
+        </div>
+        <div>
+          <label>E-mail Address</label>
+          <input
+            type="email"
+            placeholder="E-mail Address"
+            {...register("email", {
+              required: true,
+              pattern: /^\S+@\S+\.\S+$/,
+            })}
+          />
+          {errors.email &&
+            (errors.email.type === "required" ? (
+              <span className={style.error}>Required</span>
+            ) : (
+              <span className={style.error}>Invalid email format</span>
+            ))}
+        </div>
 
-      <div className={style.inputContainer}>
-        <label className={style.label}>User Name</label>
-        <input
-          type="text"
-          placeholder="User Name"
-          {...register("username", { required: true })}
-        />
-        {errors.username && <span className={style.error}>Required</span>}
+        <div>
+          <label>Password</label>
+          <input
+            type="text"
+            placeholder="Password"
+            {...register("password", { required: true })}
+          />
+          {errors.password && <span className={style.error}>Required</span>}
+        </div>
       </div>
-      <div className={style.inputContainer}>
-        <label className={style.label}>E-mail Address</label>
-        <input
-          type="email"
-          placeholder="E-mail Address"
-          {...register("email", { required: true, pattern: /^\S+@\S+\.\S+$/ })}
-        />
-        {errors.email &&
-          (errors.email.type === "required" ? (
-            <span className={style.error}>Required</span>
-          ) : (
-            <span className={style.error}>Invalid email format</span>
-          ))}
+      <div className={style.button_container}>
+        <Button text="Submit" value="submit" href="/form" />
+        <Button text="User Table" href="/table/usertable" />
       </div>
-
-      <div className={style.inputContainer}>
-        <label className={style.label}>Password</label>
-        <input
-          type="text"
-          placeholder="Password"
-          {...register("password", { required: true })}
-        />
-        {errors.password && <span className={style.error}>Required</span>}
-      </div>
-      <Button text="Send Now" value="submit" href="/form" />
     </form>
   );
 };

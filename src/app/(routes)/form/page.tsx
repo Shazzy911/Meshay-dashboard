@@ -10,6 +10,9 @@ const SongForm = React.lazy(
 const UserForm = React.lazy(
   () => import("@/components/common/common-forms/user-form/UserForm")
 );
+const PlaylistForm = React.lazy(
+  () => import("@/components/common/common-forms/playlist-form/PlaylistForm")
+);
 const ArtistForm = React.lazy(
   () => import("@/components/common/common-forms/artist-form/ArtistForm")
 );
@@ -34,6 +37,11 @@ const Page = () => {
       <section>
         <Suspense fallback={<p>Loading... Forms</p>}>
           <SongForm />
+        </Suspense>
+      </section>
+      <section>
+        <Suspense fallback={<p>Loading... Forms</p>}>
+          <PlaylistForm />
         </Suspense>
       </section>
     </main>
