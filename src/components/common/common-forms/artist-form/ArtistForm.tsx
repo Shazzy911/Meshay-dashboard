@@ -8,7 +8,7 @@ interface ContactFormValues {
   name: string;
   genre: string;
   bio: string;
-  img: string;
+  img: FileList; // Note the type change for file;
 }
 
 const ArtistForm = () => {
@@ -19,15 +19,23 @@ const ArtistForm = () => {
   } = useForm<ContactFormValues>();
 
   const onSubmit: SubmitHandler<ContactFormValues> = async (data) => {
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("genre", data.genre);
+    formData.append("bio", data.bio);
+    formData.append("img", data.img[0]);
+
     try {
-      const response = await fetch("http://localhost:4500/artist", {
+      const response = await fetch("http://localhost:7500/artist", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
+        // headers: {
+        //   "Content-Type": "multipart/form-data",
+        // },
+        body: formData,
       });
-      console.log(response);
+
+      const result = await response.json();
+      console.log(result);
       // Handle successful submission (e.g., display success message)
     } catch (error) {
       console.error("Error Posting Contact:", error);
@@ -81,7 +89,7 @@ const ArtistForm = () => {
         <div>
           <label>Image</label>
           <input
-            type="text"
+            type="file"
             placeholder="img"
             {...register("img", { required: true })}
           />

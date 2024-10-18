@@ -7,9 +7,8 @@ import { SubmitHandler, useForm } from "react-hook-form";
 interface ContactFormValues {
   title: string;
   genre: string;
-  bio: string;
-  img: string;
-  datetime: string;
+  img: FileList;
+  releaseDate: string;
   artistId: string;
 }
 
@@ -25,15 +24,21 @@ const AlbumForm = () => {
   } = useForm<ContactFormValues>();
 
   const onSubmit: SubmitHandler<ContactFormValues> = async (data) => {
+    const formData = new FormData();
+    formData.append("title", data.title);
+    formData.append("genre", data.genre);
+    formData.append("img", data.img[0]);
+    formData.append("artistId", data.artistId);
+    formData.append("releaseDate", data.releaseDate);
+
     try {
-      const response = await fetch("http://localhost:4500/album", {
+      const response = await fetch("http://localhost:7500/album", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
+
+        body: formData,
       });
-      console.log(response);
+      const result = await response.json();
+      console.log(result);
       // Handle successful submission (e.g., display success message)
     } catch (error) {
       console.error("Error Posting Contact:", error);
@@ -76,7 +81,7 @@ const AlbumForm = () => {
         <div>
           <label>Image</label>
           <input
-            type="text"
+            type="file"
             placeholder="img"
             {...register("img", { required: true })}
           />
@@ -88,9 +93,9 @@ const AlbumForm = () => {
           <label>Release Date</label>
           <input
             type="datetime-local"
-            {...register("datetime", { required: true })}
+            {...register("releaseDate", { required: true })}
           />
-          {errors.datetime && <span className={style.error}>Required</span>}
+          {errors.releaseDate && <span className={style.error}>Required</span>}
         </div>
         {/* //////////////////////////////////////////////// */}
         {/* //////////////////////////////////////////////// */}

@@ -8,11 +8,11 @@ interface ContactFormValues {
   artistId: string;
   albumId: string;
   title: string;
-  duration: number;
-  img: string;
+  duration: string;
+  img: FileList;
   genre: string;
   releaseDate: string;
-  songUrl: string;
+  songUrl: FileList;
 }
 // "artistId": "cm29dgzp1001y3uneq03diuj1",
 // "albumId": "cm29dhzb0001z3unegtvt8jbv",
@@ -35,15 +35,23 @@ const SongForm = () => {
   } = useForm<ContactFormValues>();
 
   const onSubmit: SubmitHandler<ContactFormValues> = async (data) => {
+    const formData = new FormData();
+    formData.append("artistId", data.artistId);
+    formData.append("albumId", data.albumId);
+    formData.append("title", data.title);
+    formData.append("duration", data.duration);
+    formData.append("genre", data.genre);
+    formData.append("releaseDate", data.releaseDate);
+    formData.append("songUrl", data.songUrl[0]);
+    formData.append("img", data.img[0]);
     try {
-      const response = await fetch("http://localhost:4500/song", {
+      const response = await fetch("http://localhost:8000/song", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
+
+        body: formData,
       });
-      console.log(response);
+      const result = await response.json();
+      console.log(result);
       //   console.log(data);
       // Handle successful submission (e.g., display success message)
     } catch (error) {
@@ -59,10 +67,10 @@ const SongForm = () => {
 
       <div className={style.form_container}>
         <div>
-          <label>Song Name</label>
+          <label>Song</label>
           <input
             type="text"
-            placeholder="Song Name"
+            placeholder="Song"
             {...register("title", { required: true })}
           />
           {errors.title && <span className={style.error}>Required</span>}
@@ -100,7 +108,7 @@ const SongForm = () => {
         <div>
           <label>Image</label>
           <input
-            type="text"
+            type="file"
             placeholder="img"
             {...register("img", { required: true })}
           />
@@ -111,8 +119,8 @@ const SongForm = () => {
         <div>
           <label>Song Url</label>
           <input
-            type="text"
-            placeholder="Song Url"
+            type="file"
+            placeholder="Song File"
             {...register("songUrl", { required: true })}
           />
           {errors.songUrl && <span className={style.error}>Required</span>}
