@@ -1,24 +1,39 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Button from "@/components/ui/button/Button";
 import style from "./ArtistForm.module.scss";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-interface ContactFormValues {
-  name: string;
-  genre: string;
-  bio: string;
-  img: FileList; // Note the type change for file;
-}
+const ArtistFormData = z.object({
+  name: z.string(),
+  genre: z.string(),
+  bio: z.string(),
+  img: z
+    .instanceof(FileList)
+    .refine((fileList) => fileList.length > 0)
+    .refine((fileList) => {
+      const allowedExtensions: string[] = [".jpeg", ".jpg", ".png"];
+      return allowedExtensions.some((extension) =>
+        fileList[0].name.toLowerCase().endsWith(extension)
+      );
+    }),
+});
+
+type ArtistFormType = z.infer<typeof ArtistFormData>;
 
 const ArtistForm = () => {
+  const [successMessage, setSuccessMessage] = useState(true);
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<ContactFormValues>();
+    reset,
+  } = useForm<ArtistFormType>({ resolver: zodResolver(ArtistFormData) });
 
-  const onSubmit: SubmitHandler<ContactFormValues> = async (data) => {
+  const onSubmit: SubmitHandler<ArtistFormType> = async (data) => {
     const formData = new FormData();
     formData.append("name", data.name);
     formData.append("genre", data.genre);
@@ -26,17 +41,18 @@ const ArtistForm = () => {
     formData.append("img", data.img[0]);
 
     try {
-      const response = await fetch("http://localhost:7500/artist", {
+      const response = await fetch("http://localhost:8000/artist", {
         method: "POST",
-        // headers: {
-        //   "Content-Type": "multipart/form-data",
-        // },
         body: formData,
       });
-
       const result = await response.json();
-      console.log(result);
-      // Handle successful submission (e.g., display success message)
+      if (result.success) {
+        setSuccessMessage(true);
+        reset(); // Reset form fields
+        setTimeout(() => {
+          setSuccessMessage(false);
+        }, 3000); // Hide success message after 3 seconds
+      }
     } catch (error) {
       console.error("Error Posting Contact:", error);
     }
@@ -96,8 +112,13 @@ const ArtistForm = () => {
           {errors.img && <span className={style.error}>Required</span>}
         </div>
       </div>
+      {successMessage && (
+        <p className={style.success} style={{ color: "red" }}>
+          Submitted successfully!
+        </p>
+      )}
       <div className={style.button_container}>
-        <Button text="Submit" value="submit" href="/form" />
+        <Button text="Submit" value="submit" href="" />
         <Button text="Table" href="/table/artisttable" />
       </div>
     </form>

@@ -1,34 +1,45 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Button from "@/components/ui/button/Button";
 import style from "./UserForm.module.scss";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-interface ContactFormValues {
-  username: string;
-  email: string;
-  password: string;
-  selectedOption: string;
-}
+const UserFormSchema = z.object({
+  username: z.string(),
+  email: z.string().email(),
+  password: z.string().min(6).max(15),
+});
+
+type UserFormType = z.infer<typeof UserFormSchema>;
 
 const UserForm = () => {
+  const [successMessage, setSuccessMessage] = useState(false);
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<ContactFormValues>();
+    reset,
+  } = useForm<UserFormType>({ resolver: zodResolver(UserFormSchema) });
 
-  const onSubmit: SubmitHandler<ContactFormValues> = async (data) => {
+  const onSubmit: SubmitHandler<UserFormType> = async (data) => {
     try {
-      const response = await fetch("http://localhost:4500/user", {
+      const response = await fetch("http://localhost:8000/user", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
       });
-      console.log(response);
-      // Handle successful submission (e.g., display success message)
+      const result = await response.json();
+      if (result.success) {
+        setSuccessMessage(true);
+        reset(); // Reset form fields
+        setTimeout(() => {
+          setSuccessMessage(false);
+        }, 3000); // Hide success message after 3 seconds
+      }
     } catch (error) {
       console.error("Error Posting Contact:", error);
     }
@@ -75,8 +86,13 @@ const UserForm = () => {
           {errors.password && <span className={style.error}>Required</span>}
         </div>
       </div>
+      {successMessage && (
+        <p className={style.success} style={{ color: "red" }}>
+          Submitted successfully!
+        </p>
+      )}
       <div className={style.button_container}>
-        <Button text="Submit" value="submit" href="/form" />
+        <Button text="Submit" value="submit" href="" />
         <Button text="User Table" href="/table/usertable" />
       </div>
     </form>
