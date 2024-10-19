@@ -1,33 +1,44 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Button from "@/components/ui/button/Button";
 import style from "./PlaylistForm.module.scss";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-interface ContactFormValues {
-  name: string;
-  description: string;
-  selectedOption: string;
-}
+const PlaylistFormData = z.object({
+  name: z.string(),
+  description: z.string(),
+  selectedOption: z.string(),
+});
+type PlaylistFormType = z.infer<typeof PlaylistFormData>;
 
 const PlaylistForm = () => {
+  const [successMessage, setSuccessMessage] = useState(false);
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<ContactFormValues>();
+    reset,
+  } = useForm<PlaylistFormType>({ resolver: zodResolver(PlaylistFormData) });
 
-  const onSubmit: SubmitHandler<ContactFormValues> = async (data) => {
+  const onSubmit: SubmitHandler<PlaylistFormType> = async (data) => {
     try {
-      const response = await fetch("http://localhost:4500/playlist", {
+      const response = await fetch("http://localhost:8000/playlist", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
       });
-      console.log(response);
-      // Handle successful submission (e.g., display success message)
+      const result = await response.json();
+      if (result.success) {
+        setSuccessMessage(true);
+        reset(); // Reset form fields
+        setTimeout(() => {
+          setSuccessMessage(false);
+        }, 3000); // Hide success message after 3 seconds
+      }
     } catch (error) {
       console.error("Error Posting Contact:", error);
     }
@@ -74,6 +85,11 @@ const PlaylistForm = () => {
           )}
         </div>
       </div>
+      {successMessage && (
+        <p className={style.success} style={{ color: "red" }}>
+          Submitted successfully!
+        </p>
+      )}
       <div className={style.button_container}>
         <Button text="Submit" value="submit" href="/form" />
         <Button text="User Table" href="/table/playlisttable" />

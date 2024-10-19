@@ -1,40 +1,50 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Button from "@/components/ui/button/Button";
 import style from "./SongForm.module.scss";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+const SongFormData = z.object({
+  artistId: z.string(),
+  albumId: z.string(),
+  title: z.string(),
+  duration: z.string(),
+  genre: z.string(),
+  releaseDate: z.string(),
+  img: z
+    .instanceof(FileList)
+    .refine((fileList) => fileList.length > 0)
+    .refine((fileList) => {
+      const allowedExtensions: string[] = [".jpeg", ".jpg", ".png"];
+      return allowedExtensions.some((extension) =>
+        fileList[0].name.toLowerCase().endsWith(extension)
+      );
+    }),
+  songUrl: z
+    .instanceof(FileList)
+    .refine(
+      (fileList) =>
+        fileList.length > 0 &&
+        fileList[0].type.startsWith("audio/") &&
+        [".mp3", ".wav", ".ogg", ".aac"].some((extension) =>
+          fileList[0].name.toLowerCase().endsWith(extension)
+        )
+    ),
+});
 
-interface ContactFormValues {
-  artistId: string;
-  albumId: string;
-  title: string;
-  duration: string;
-  img: FileList;
-  genre: string;
-  releaseDate: string;
-  songUrl: FileList;
-}
-// "artistId": "cm29dgzp1001y3uneq03diuj1",
-// "albumId": "cm29dhzb0001z3unegtvt8jbv",
-// "title": "Dark Paradise",
-// "duration": 215,
-// "img": "http://example.com",
-// "genre": "Country",
-// "songUrl": "http://song.com",
-// "releaseDate": "2020-03-20T00:00:00.000Z",
-
-// const fetchingArtist = async()=>{
-
-// }
+type SongFormType = z.infer<typeof SongFormData>;
 
 const SongForm = () => {
+  const [successMessage, setSuccessMessage] = useState(false);
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<ContactFormValues>();
+    reset,
+  } = useForm<SongFormType>({ resolver: zodResolver(SongFormData) });
 
-  const onSubmit: SubmitHandler<ContactFormValues> = async (data) => {
+  const onSubmit: SubmitHandler<SongFormType> = async (data) => {
     const formData = new FormData();
     formData.append("artistId", data.artistId);
     formData.append("albumId", data.albumId);
@@ -51,9 +61,13 @@ const SongForm = () => {
         body: formData,
       });
       const result = await response.json();
-      console.log(result);
-      //   console.log(data);
-      // Handle successful submission (e.g., display success message)
+      if (result.success) {
+        setSuccessMessage(true);
+        reset(); // Reset form fields
+        setTimeout(() => {
+          setSuccessMessage(false);
+        }, 3000); // Hide success message after 3 seconds
+      }
     } catch (error) {
       console.error("Error Posting Contact:", error);
     }
@@ -97,9 +111,9 @@ const SongForm = () => {
         <div>
           <label>Song Duration</label>
           <input
-            type="number"
+            type="text"
             placeholder="duration"
-            {...register("duration", { required: true, valueAsNumber: true })}
+            {...register("duration", { required: true })}
           />
           {errors.duration && <span className={style.error}>Required</span>}
         </div>
@@ -160,8 +174,13 @@ const SongForm = () => {
           {errors.artistId && <span className={style.error}>Required</span>}
         </div>
       </div>
+      {successMessage && (
+        <p className={style.success} style={{ color: "red" }}>
+          Submitted successfully!
+        </p>
+      )}
       <div className={style.button_container}>
-        <Button text="Submit" value="submit" href="/form" />
+        <Button text="Submit" value="submit" href="" />
         <Button text="Table" href="/table/songtable" />
       </div>
     </form>
