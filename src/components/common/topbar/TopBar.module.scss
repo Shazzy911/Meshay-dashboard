@@ -1,15 +1,22 @@
 // @import "../../styles/colors.module.scss";
-@import "../../../app/styles/colors.module.scss",
-  "../../../app/styles/mixin.module.scss";
+@use "../../../app/styles/colors.module.scss" as *;
+@use "../../../app/styles/mixin.module.scss" as *;
 
-// Main Container
+// Main Container TopBar
 .container {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 8.3rem;
+  height: 7rem;
   padding: 2.2rem 2.5rem 2rem 2rem;
   border-bottom: 1px solid $sec-color;
+  position: sticky;
+  background-color: $sec-color;
+  top: 0;
+  z-index: 30;
+  -webkit-box-shadow: 0px 0px 15px 1px rgba(0, 0, 0, 0.09);
+  -moz-box-shadow: 0px 0px 15px 1px rgba(0, 0, 0, 0.09);
+  box-shadow: 0px 0px 15px 1px rgba(0, 0, 0, 0.09);
 }
 // Top Bar Search
 
@@ -25,10 +32,13 @@
   .top_button {
     display: none;
   }
+  .user {
+    gap: 0.5rem;
+  }
   .icons {
-    // padding: 1.5rem;
-    @include display_padding_bg(1.5rem, $bg-color);
-    @include transition_ease();
+    // padding: 1.5rem;b
+    @include display_padding_bg(1.2rem, $bg-color);
+    // @include transition_ease();
     svg {
       font-size: 1.8rem;
     }

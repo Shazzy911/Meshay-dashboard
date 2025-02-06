@@ -5,31 +5,53 @@ import style from "./SongForm.module.scss";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+
+// Custom validation for FileList (client-side only)
+const isFileList = (value: unknown): value is FileList => {
+  return typeof window !== "undefined" && value instanceof FileList;
+};
+
 const SongFormData = z.object({
-  artistId: z.string(),
-  albumId: z.string(),
-  title: z.string(),
-  duration: z.string(),
-  genre: z.string(),
-  releaseDate: z.string(),
+  artistId: z.string().min(1, "Artist ID is required"),
+  albumId: z.string().min(1, "Album ID is required"),
+  title: z.string().min(1, "Title is required"),
+  duration: z.string().min(1, "Duration is required"),
+  genre: z.string().min(1, "Genre is required"),
+  releaseDate: z.string().min(1, "Release date is required"),
   img: z
-    .instanceof(FileList)
-    .refine((fileList) => fileList.length > 0)
+    .any()
+    .refine((value) => isFileList(value), "Expected a FileList for image")
+    .refine(
+      (fileList) => fileList.length > 0,
+      "At least one image file is required"
+    )
     .refine((fileList) => {
-      const allowedExtensions: string[] = [".jpeg", ".jpg", ".png"];
-      return allowedExtensions.some((extension) =>
-        fileList[0].name.toLowerCase().endsWith(extension)
+      const allowedExtensions = [".jpeg", ".jpg", ".png"];
+      return Array.from(fileList).every((file) =>
+        allowedExtensions.some((extension) =>
+          file.name.toLowerCase().endsWith(extension)
+        )
       );
-    }),
+    }, "Only .jpeg, .jpg, and .png files are allowed for images"),
   songUrl: z
-    .instanceof(FileList)
+    .any()
+    .refine((value) => isFileList(value), "Expected a FileList for audio")
+    .refine(
+      (fileList) => fileList.length > 0,
+      "At least one audio file is required"
+    )
+    .refine((fileList) => {
+      const allowedExtensions = [".mp3", ".wav", ".ogg", ".aac"];
+      return Array.from(fileList).every((file) =>
+        allowedExtensions.some((extension) =>
+          file.name.toLowerCase().endsWith(extension)
+        )
+      );
+    }, "Only .mp3, .wav, .ogg, and .aac files are allowed for audio")
     .refine(
       (fileList) =>
-        fileList.length > 0 &&
-        fileList[0].type.startsWith("audio/") &&
-        [".mp3", ".wav", ".ogg", ".aac"].some((extension) =>
-          fileList[0].name.toLowerCase().endsWith(extension)
-        )
+        Array.from(fileList).every((file) => file.type.startsWith("audio/")),
+      "Uploaded file must be an audio type"
     ),
 });
 
@@ -155,7 +177,7 @@ const SongForm = () => {
           <label>Select Album</label>
           <select {...register("albumId", { required: true })}>
             <option>Select User</option>
-            <option value="cm29dxoj6000ec0f9asr9lugo">Folk Flore</option>
+            <option value="cm6r66osa0007a928gskexf87">Last Dream</option>
             <option value="266">User 1</option>
             <option value="277">User 1</option>
           </select>
@@ -167,8 +189,8 @@ const SongForm = () => {
           <label>Select Artist</label>
           <select {...register("artistId", { required: true })}>
             <option>Album</option>
-            <option value="cm29ca9iq0004muahjfe10fbp">Taylor Swift</option>
-            <option value="id">User 1</option>
+            <option value="cm6l38o6q0001bs2hf1jsgo2u">Harry Style</option>
+            <option value="cm6l35gm00000bs2hv87rqla9">Zayn Malik</option>
             <option value="id">User 1</option>
           </select>
           {errors.artistId && <span className={style.error}>Required</span>}

@@ -6,25 +6,31 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+// Custom validation for FileList (client-side only)
+const isFileList = (value: unknown): value is FileList => {
+  return typeof window !== "undefined" && value instanceof FileList;
+};
+
 const ArtistFormData = z.object({
-  name: z.string(),
-  genre: z.string(),
-  bio: z.string(),
+  name: z.string().min(1, "Name is required"),
+  genre: z.string().min(1, "Genre is required"),
+  bio: z.string().min(1, "Bio is required"),
   img: z
-    .instanceof(FileList)
-    .refine((fileList) => fileList.length > 0)
+    .any()
+    .refine((value) => isFileList(value), "Expected a FileList")
+    .refine((fileList) => fileList.length > 0, "At least one file is required")
     .refine((fileList) => {
-      const allowedExtensions: string[] = [".jpeg", ".jpg", ".png"];
-      return allowedExtensions.some((extension) =>
-        fileList[0].name.toLowerCase().endsWith(extension)
+      const allowedExtensions = [".jpeg", ".jpg", ".png"];
+      return Array.from(fileList).every((file: File) =>
+        allowedExtensions.some((ext) => file.name.toLowerCase().endsWith(ext))
       );
-    }),
+    }, "Only .jpeg, .jpg, and .png files are allowed"),
 });
 
 type ArtistFormType = z.infer<typeof ArtistFormData>;
 
 const ArtistForm = () => {
-  const [successMessage, setSuccessMessage] = useState(true);
+  const [successMessage, setSuccessMessage] = useState(false);
 
   const {
     register,
@@ -61,9 +67,8 @@ const ArtistForm = () => {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className={style.form}>
       <h1 className={style.heading}>Artist Form</h1>
-      {/* //////////////////////////////////////////////// */}
-      {/* //////////////////////////////////////////////// */}
       <div className={style.form_container}>
+        {/* Name Field */}
         <div>
           <label>Artist Name</label>
           <input
@@ -71,10 +76,12 @@ const ArtistForm = () => {
             placeholder="Artist Name"
             {...register("name", { required: true })}
           />
-          {errors.name && <span className={style.error}>Required</span>}
+          {errors.name && (
+            <span className={style.error}>{errors.name.message}</span>
+          )}
         </div>
-        {/* //////////////////////////////////////////////// */}
-        {/* //////////////////////////////////////////////// */}
+
+        {/* Genre Field */}
         <div>
           <label>Genre</label>
           <input
@@ -82,41 +89,45 @@ const ArtistForm = () => {
             placeholder="Genre"
             {...register("genre", { required: true })}
           />
-          {errors.genre &&
-            (errors.genre.type === "required" ? (
-              <span className={style.error}>Required</span>
-            ) : (
-              <span className={style.error}>Invalid email format</span>
-            ))}
+          {errors.genre && (
+            <span className={style.error}>{errors.genre.message}</span>
+          )}
         </div>
-        {/* //////////////////////////////////////////////// */}
-        {/* //////////////////////////////////////////////// */}
+
+        {/* Bio Field */}
         <div>
           <label>Bio</label>
           <input
             type="text"
-            placeholder="bio"
+            placeholder="Bio"
             {...register("bio", { required: true })}
           />
-          {errors.bio && <span className={style.error}>Required</span>}
+          {errors.bio && (
+            <span className={style.error}>{errors.bio.message}</span>
+          )}
         </div>
-        {/* //////////////////////////////////////////////// */}
-        {/* //////////////////////////////////////////////// */}
+
+        {/* Image Field */}
         <div>
           <label>Image</label>
           <input
             type="file"
-            placeholder="img"
             {...register("img", { required: true })}
           />
-          {errors.img && <span className={style.error}>Required</span>}
+          {errors.img && (
+            <span className={style.error}>{errors.img.message}</span>
+          )}
         </div>
       </div>
+
+      {/* Success Message */}
       {successMessage && (
-        <p className={style.success} style={{ color: "red" }}>
+        <p className={style.success} style={{ color: "green" }}>
           Submitted successfully!
         </p>
       )}
+
+      {/* Buttons */}
       <div className={style.button_container}>
         <Button text="Submit" value="submit" href="" />
         <Button text="Table" href="/table/artisttable" />

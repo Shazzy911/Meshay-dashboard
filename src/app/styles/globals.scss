@@ -1,4 +1,4 @@
-@import "./colors.module.scss";
+@use "./colors.module.scss" as * ;
 // @import 'normalize-css/normalize.css';
 @import "normalize.css";
 // Variables for Color and size ;
@@ -18,7 +18,7 @@ html {
 }
 body {
   font-size: 1.6rem;
-  background-color: $bg-color-main;
+  background-color: $bg-color;
   overflow-x: hidden;
 
   // color: white;

@@ -3,22 +3,22 @@
 
 // Main Container of SideBar
 .container {
-  height: 100vh;
+  height: calc(100dvh - 7rem);
+  margin: 0 1rem;
+  border-radius: 0.8rem;
   display: none;
   flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
   background-color: $bg-color;
-  color: white;
   padding: 2rem 0 0 1rem;
-  position: fixed;
-  top: 0;
-  // left: 0;
-  // bottom: 0;
-  z-index: 5;
-  width: 100%;
+  position: sticky;
+  top: 8rem;
+  z-index: 2;
+  width: 250px;
   transition: transform 0.5s ease;
   border-right: 1px solid $sec-color;
+  -webkit-box-shadow: 0px 0px 15px 1px rgba(0, 0, 0, 0.09);
+  -moz-box-shadow: 0px 0px 15px 1px rgba(0, 0, 0, 0.09);
+  box-shadow: 0px 0px 15px 1px rgba(0, 0, 0, 0.09);
 
   //// When Active
   &.active {
