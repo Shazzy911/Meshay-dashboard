@@ -6,21 +6,42 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+// Custom validation for FileList (client-side only)
+const isFileList = (value: unknown): value is FileList => {
+  return typeof window !== "undefined" && value instanceof FileList;
+};
 const AlbumFormData = z.object({
-  title: z.string(),
-  genre: z.string(),
-  releaseDate: z.string(),
-  artistId: z.string(),
+  title: z.string().min(1, "Title is required"),
+  genre: z.string().min(1, "Genre is required"),
+  releaseDate: z.string().min(1, "Release date is required"),
+  artistId: z.string().min(1, "Artist ID is required"),
   img: z
-    .instanceof(FileList)
-    .refine((fileList) => fileList.length > 0)
+    .any()
+    .refine((value) => isFileList(value), "Expected a FileList")
+    .refine((fileList) => fileList.length > 0, "At least one file is required")
     .refine((fileList) => {
-      const allowedExtensions: string[] = [".jpeg", ".jpg", ".png"];
-      return allowedExtensions.some((extension) =>
-        fileList[0].name.toLowerCase().endsWith(extension)
+      const allowedExtensions = [".jpeg", ".jpg", ".png"];
+      return Array.from(fileList).every((file: File) =>
+        allowedExtensions.some((ext) => file.name.toLowerCase().endsWith(ext))
       );
-    }),
+    }, "Only .jpeg, .jpg, and .png files are allowed"),
 });
+
+// const AlbumFormData = z.object({
+//   title: z.string(),
+//   genre: z.string(),
+//   releaseDate: z.string(),
+//   artistId: z.string(),
+//   img: z
+//     .instanceof(FileList)
+//     .refine((fileList) => fileList.length > 0)
+//     .refine((fileList) => {
+//       const allowedExtensions: string[] = [".jpeg", ".jpg", ".png"];
+//       return allowedExtensions.some((extension) =>
+//         fileList[0].name.toLowerCase().endsWith(extension)
+//       );
+//     }),
+// });
 type AlbumFormType = z.infer<typeof AlbumFormData>;
 
 const AlbumForm = () => {
@@ -116,8 +137,8 @@ const AlbumForm = () => {
           <label>Select Artist</label>
           <select {...register("artistId", { required: true })}>
             <option value="">Select Artist</option>
-            <option value="cm29ca9iq0006muahlz1gccij">Billie Ellish</option>
-            <option value="266">User 1</option>
+            <option value="cm6l38o6q0001bs2hf1jsgo2u">Harry Style</option>
+            <option value="cm6l35gm00000bs2hv87rqla9">Zayn Malik</option>
             <option value="277">User 1</option>
           </select>
           {errors.artistId && <span className={style.error}>Required</span>}
