@@ -1,0 +1,99 @@
+﻿.container {
+  width: min(100%, 1200px);
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  text-align: center;
+}
+
+.title {
+  font-size: clamp(2.4rem, 3vw, 3.6rem);
+  margin: 0;
+  color: #121212;
+  color: white;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 1rem;
+  color: #666;
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+}
+
+.tabButton {
+  border: 1px solid rgba(18, 18, 18, 0.15);
+  background: rgba(255, 255, 255, 0.92);
+  color: #121212;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 0.9rem 1.6rem;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.tabButton:hover {
+  transform: translateY(-1px);
+  background: #f5f5f5;
+}
+
+.activeTab {
+  background: #121212;
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 16px 40px rgba(18, 18, 18, 0.08);
+}
+
+.formCard {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 2rem;
+  box-shadow: 0 20px 50px rgba(32, 32, 32, 0.08);
+  padding: 2rem;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.loading {
+  margin: auto;
+  font-size: 1.1rem;
+  color: #555;
+}
+
+@media screen and (max-width: 768px) {
+  .container {
+    padding: 1.5rem 1rem 3rem;
+  }
+
+  .formCard {
+    padding: 1.5rem;
+  }
+}
+
+@media screen and (max-width: 520px) {
+  .tabButton {
+    width: 100%;
+    text-align: center;
+  }
+}
