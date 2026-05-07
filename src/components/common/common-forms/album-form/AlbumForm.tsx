@@ -3,53 +3,9 @@ import React, { useState } from "react";
 import Button from "@/components/ui/button/Button";
 import style from "./AlbumForm.module.scss";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-const AlbumFormData = z.object({
-  title: z.string().min(1, "Title is required"),
-  genre: z.string().min(1, "Genre is required"),
-  releaseDate: z.string().min(1, "Release date is required"),
-  artistId: z.string().min(1, "Artist ID is required"),
-  img: z
-    .custom<FileList>((value) => value instanceof FileList, {
-      message: "Expected a FileList",
-    })
-    .refine((files) => files.length > 0, {
-      message: "At least one file is required",
-    })
-    .refine(
-      (files) => {
-        const allowedExtensions = [".jpeg", ".jpg", ".png"];
-
-        return Array.from(files).every((file) =>
-          allowedExtensions.some((ext) =>
-            file.name.toLowerCase().endsWith(ext),
-          ),
-        );
-      },
-      {
-        message: "Only .jpeg, .jpg, and .png files are allowed",
-      },
-    ),
-});
-
-// const AlbumFormData = z.object({
-//   title: z.string(),
-//   genre: z.string(),
-//   releaseDate: z.string(),
-//   artistId: z.string(),
-//   img: z
-//     .instanceof(FileList)
-//     .refine((fileList) => fileList.length > 0)
-//     .refine((fileList) => {
-//       const allowedExtensions: string[] = [".jpeg", ".jpg", ".png"];
-//       return allowedExtensions.some((extension) =>
-//         fileList[0].name.toLowerCase().endsWith(extension)
-//       );
-//     }),
-// });
-type AlbumFormType = z.infer<typeof AlbumFormData>;
+import ArtistSelect from "@/components/ui/selection/ArtistSelect";
+import { AlbumFormType, AlbumFormData } from "@/types/album";
 
 const AlbumForm = () => {
   const [successMessage, setSuccessMessage] = useState(false);
@@ -89,8 +45,6 @@ const AlbumForm = () => {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className={style.form}>
       <h1 className={style.heading}>Album Form</h1>
-      {/* //////////////////////////////////////////////// */}
-      {/* //////////////////////////////////////////////// */}
       <div className={style.form_container}>
         <div>
           <label>Album Name</label>
@@ -101,8 +55,7 @@ const AlbumForm = () => {
           />
           {errors.title && <span className={style.error}>Required</span>}
         </div>
-        {/* //////////////////////////////////////////////// */}
-        {/* //////////////////////////////////////////////// */}
+
         <div>
           <label>Genre</label>
           <input
@@ -117,8 +70,7 @@ const AlbumForm = () => {
               <span className={style.error}>Invalid email format</span>
             ))}
         </div>
-        {/* //////////////////////////////////////////////// */}
-        {/* //////////////////////////////////////////////// */}
+
         <div>
           <label>Image</label>
           <input
@@ -128,8 +80,7 @@ const AlbumForm = () => {
           />
           {errors.img && <span className={style.error}>Required</span>}
         </div>
-        {/* //////////////////////////////////////////////// */}
-        {/* //////////////////////////////////////////////// */}
+
         <div>
           <label>Release Date</label>
           <input
@@ -138,16 +89,10 @@ const AlbumForm = () => {
           />
           {errors.releaseDate && <span className={style.error}>Required</span>}
         </div>
-        {/* //////////////////////////////////////////////// */}
-        {/* //////////////////////////////////////////////// */}
+
         <div>
           <label>Select Artist</label>
-          <select {...register("artistId", { required: true })}>
-            <option value="">Select Artist</option>
-            <option value="cm6l38o6q0001bs2hf1jsgo2u">Harry Style</option>
-            <option value="cm6l35gm00000bs2hv87rqla9">Zayn Malik</option>
-            <option value="277">User 1</option>
-          </select>
+          <ArtistSelect register={register} errors={errors} />
           {errors.artistId && <span className={style.error}>Required</span>}
         </div>
       </div>
