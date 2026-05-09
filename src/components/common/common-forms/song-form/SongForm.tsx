@@ -3,59 +3,12 @@ import React, { useState } from "react";
 import Button from "@/components/ui/button/Button";
 import style from "./SongForm.module.scss";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import ArtistSelect from "@/components/ui/selection/ArtistSelect";
+import { postSong } from "@/lib/api/postSong";
 
-// Custom validation for FileList (client-side only)
-const isFileList = (value: unknown): value is FileList => {
-  return typeof window !== "undefined" && value instanceof FileList;
-};
-
-const SongFormData = z.object({
-  artistId: z.string().min(1, "Artist ID is required"),
-  albumId: z.string().min(1, "Album ID is required"),
-  title: z.string().min(1, "Title is required"),
-  duration: z.string().min(1, "Duration is required"),
-  genre: z.string().min(1, "Genre is required"),
-  releaseDate: z.string().min(1, "Release date is required"),
-  img: z
-    .any()
-    .refine((value) => isFileList(value), "Expected a FileList for image")
-    .refine(
-      (fileList) => fileList.length > 0,
-      "At least one image file is required"
-    )
-    .refine((fileList) => {
-      const allowedExtensions = [".jpeg", ".jpg", ".png"];
-      return Array.from(fileList).every((file) =>
-        allowedExtensions.some((extension) =>
-          file.name.toLowerCase().endsWith(extension)
-        )
-      );
-    }, "Only .jpeg, .jpg, and .png files are allowed for images"),
-  songUrl: z
-    .any()
-    .refine((value) => isFileList(value), "Expected a FileList for audio")
-    .refine(
-      (fileList) => fileList.length > 0,
-      "At least one audio file is required"
-    )
-    .refine((fileList) => {
-      const allowedExtensions = [".mp3", ".wav", ".ogg", ".aac"];
-      return Array.from(fileList).every((file) =>
-        allowedExtensions.some((extension) =>
-          file.name.toLowerCase().endsWith(extension)
-        )
-      );
-    }, "Only .mp3, .wav, .ogg, and .aac files are allowed for audio")
-    .refine(
-      (fileList) =>
-        Array.from(fileList).every((file) => file.type.startsWith("audio/")),
-      "Uploaded file must be an audio type"
-    ),
-});
-
-type SongFormType = z.infer<typeof SongFormData>;
+import { SongFormData, SongFormType } from "@/types/song";
+import AlbumSelect from "@/components/ui/selection/AlbumSelect";
 
 const SongForm = () => {
   const [successMessage, setSuccessMessage] = useState(false);
@@ -77,12 +30,8 @@ const SongForm = () => {
     formData.append("songUrl", data.songUrl[0]);
     formData.append("img", data.img[0]);
     try {
-      const response = await fetch("http://localhost:8000/song", {
-        method: "POST",
+      const result = await postSong(formData);
 
-        body: formData,
-      });
-      const result = await response.json();
       if (result.success) {
         setSuccessMessage(true);
         reset(); // Reset form fields
@@ -98,8 +47,6 @@ const SongForm = () => {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className={style.form}>
       <h1 className={style.heading}>Song Form</h1>
-      {/* //////////////////////////////////////////////// */}
-      {/* //////////////////////////////////////////////// */}
 
       <div className={style.form_container}>
         <div>
@@ -111,9 +58,6 @@ const SongForm = () => {
           />
           {errors.title && <span className={style.error}>Required</span>}
         </div>
-
-        {/* //////////////////////////////////////////////// */}
-        {/* //////////////////////////////////////////////// */}
         <div>
           <label>Genre</label>
           <input
@@ -128,8 +72,7 @@ const SongForm = () => {
               <span className={style.error}>Invalid email format</span>
             ))}
         </div>
-        {/* //////////////////////////////////////////////// */}
-        {/* //////////////////////////////////////////////// */}
+
         <div>
           <label>Song Duration</label>
           <input
@@ -139,8 +82,7 @@ const SongForm = () => {
           />
           {errors.duration && <span className={style.error}>Required</span>}
         </div>
-        {/* //////////////////////////////////////////////// */}
-        {/* //////////////////////////////////////////////// */}
+
         <div>
           <label>Image</label>
           <input
@@ -150,8 +92,7 @@ const SongForm = () => {
           />
           {errors.img && <span className={style.error}>Required</span>}
         </div>
-        {/* //////////////////////////////////////////////// */}
-        {/* //////////////////////////////////////////////// */}
+
         <div>
           <label>Song Url</label>
           <input
@@ -161,8 +102,7 @@ const SongForm = () => {
           />
           {errors.songUrl && <span className={style.error}>Required</span>}
         </div>
-        {/* //////////////////////////////////////////////// */}
-        {/* //////////////////////////////////////////////// */}
+
         <div>
           <label>Release Date</label>
           <input
@@ -171,28 +111,15 @@ const SongForm = () => {
           />
           {errors.releaseDate && <span className={style.error}>Required</span>}
         </div>
-        {/* //////////////////////////////////////////////// */}
-        {/* //////////////////////////////////////////////// */}
+
         <div>
-          <label>Select Album</label>
-          <select {...register("albumId", { required: true })}>
-            <option>Select User</option>
-            <option value="cm6r66osa0007a928gskexf87">Last Dream</option>
-            <option value="266">User 1</option>
-            <option value="277">User 1</option>
-          </select>
+          <AlbumSelect register={register} errors={errors} />
           {errors.albumId && <span className={style.error}>Required</span>}
         </div>
-        {/* //////////////////////////////////////////////// */}
-        {/* //////////////////////////////////////////////// */}
+
         <div>
-          <label>Select Artist</label>
-          <select {...register("artistId", { required: true })}>
-            <option>Album</option>
-            <option value="cm6l38o6q0001bs2hf1jsgo2u">Harry Style</option>
-            <option value="cm6l35gm00000bs2hv87rqla9">Zayn Malik</option>
-            <option value="id">User 1</option>
-          </select>
+          <ArtistSelect register={register} errors={errors} />
+
           {errors.artistId && <span className={style.error}>Required</span>}
         </div>
       </div>

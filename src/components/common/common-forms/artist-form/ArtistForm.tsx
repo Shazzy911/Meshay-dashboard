@@ -3,31 +3,9 @@ import React, { useState } from "react";
 import Button from "@/components/ui/button/Button";
 import style from "./ArtistForm.module.scss";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-// Custom validation for FileList (client-side only)
-const isFileList = (value: unknown): value is FileList => {
-  return typeof window !== "undefined" && value instanceof FileList;
-};
-
-const ArtistFormData = z.object({
-  name: z.string().min(1, "Name is required"),
-  genre: z.string().min(1, "Genre is required"),
-  bio: z.string().min(1, "Bio is required"),
-  img: z
-    .any()
-    .refine((value) => isFileList(value), "Expected a FileList")
-    .refine((fileList) => fileList.length > 0, "At least one file is required")
-    .refine((fileList) => {
-      const allowedExtensions = [".jpeg", ".jpg", ".png"];
-      return Array.from(fileList).every((file: File) =>
-        allowedExtensions.some((ext) => file.name.toLowerCase().endsWith(ext))
-      );
-    }, "Only .jpeg, .jpg, and .png files are allowed"),
-});
-
-type ArtistFormType = z.infer<typeof ArtistFormData>;
+import { ArtistFormData, ArtistFormType } from "@/types/artist";
+import { postArtist } from "@/lib/api/postArtist";
 
 const ArtistForm = () => {
   const [successMessage, setSuccessMessage] = useState(false);
@@ -47,11 +25,7 @@ const ArtistForm = () => {
     formData.append("img", data.img[0]);
 
     try {
-      const response = await fetch("http://localhost:8000/artist", {
-        method: "POST",
-        body: formData,
-      });
-      const result = await response.json();
+      const result = await postArtist(formData);
       if (result.success) {
         setSuccessMessage(true);
         reset(); // Reset form fields
@@ -110,10 +84,7 @@ const ArtistForm = () => {
         {/* Image Field */}
         <div>
           <label>Image</label>
-          <input
-            type="file"
-            {...register("img", { required: true })}
-          />
+          <input type="file" {...register("img", { required: true })} />
           {errors.img && (
             <span className={style.error}>{errors.img.message}</span>
           )}

@@ -1,139 +1,115 @@
-/// ========================================
-/// ========= Form Validation Scss =========
-/// ========================================
 .form {
-  background: linear-gradient(
-    135deg,
-    rgba(20, 30, 48, 0.95) 0%,
-    rgba(35, 45, 65, 0.95) 100%
-  );
-  background-image:
-    linear-gradient(
-      135deg,
-      rgba(20, 30, 48, 0.95) 0%,
-      rgba(35, 45, 65, 0.95) 100%
-    ),
-    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><defs><pattern id="waves" width="100" height="40" patternUnits="userSpaceOnUse"><path d="M0,20 Q25,10 50,20 T100,20" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/></pattern></defs><rect width="1200" height="600" fill="url(%23waves)"/></svg>');
-  padding: 3rem;
-  border-radius: 15px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(10px);
+  // min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  flex-direction: column;
+  height: 100%;
 
-  .heading {
-    color: #fff;
-    margin-bottom: 2rem;
-    font-size: 2.5rem;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
+  background-image:
+    linear-gradient(rgba(10, 15, 25, 0.8), rgba(10, 15, 25, 0.9)),
+    url("https://images.unsplash.com/photo-1702974915085-26d2daf1e71a?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 
   .form_container {
-    flex-direction: row !important;
+    width: 100%;
+    max-width: 900px;
+
+    display: flex;
     flex-wrap: wrap;
-    gap: 2rem;
-    margin-bottom: 2rem;
+    gap: 1.5rem;
 
-    div {
-      flex: 1;
-      min-width: 250px;
-      display: flex;
-      flex-direction: column;
-      gap: 0.8rem;
+    padding: 2rem;
+    border-radius: 12px;
 
-      label {
-        color: #e0e0e0;
-        font-weight: 600;
-        font-size: 1.1rem;
-      }
+    background: rgba(20, 25, 35, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
 
-      input,
-      select {
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        padding: 1rem;
-        border-radius: 8px;
-        color: #fff;
-        font-size: 1rem;
-        transition: all 0.3s ease;
+  .heading {
+    width: 100%;
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 1rem;
+  }
 
-        &:focus {
-          outline: none;
-          background: rgba(255, 255, 255, 0.12);
-          border-color: rgba(250, 112, 154, 0.5);
-          box-shadow: 0 0 15px rgba(250, 112, 154, 0.2);
-        }
+  // each field wrapper
+  .form_container > div {
+    flex: 1 1 48%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
 
-        &::placeholder {
-          color: rgba(255, 255, 255, 0.5);
-        }
-      }
+  label {
+    color: #cbd5e1;
+    font-size: 1.5rem;
+  }
 
-      option {
-        background: #1a1a2e;
-        color: #fff;
-      }
+  input {
+    padding: 1.8rem 1.3rem;
+    border-radius: 8px;
+    border: 1px solid #334155;
+    background: #0f172a;
+    color: #fff;
+    font-size: 1rem;
 
-      .error {
-        color: #ff6b6b;
-        font-size: 0.9rem;
-        font-weight: 500;
-      }
+    transition: 0.2s ease;
+
+    &:focus {
+      outline: none;
+      border-color: #f43f5e;
+    }
+
+    &::placeholder {
+      color: #64748b;
     }
   }
 
+  input[type="file"] {
+    padding: 1.5rem;
+    background: transparent;
+  }
+
+  .error {
+    font-size: 0.8rem;
+    color: #f87171;
+  }
+
   .success {
-    background: rgba(76, 175, 80, 0.2);
-    border: 1px solid rgba(76, 175, 80, 0.5);
-    color: #4caf50;
-    padding: 1rem;
-    border-radius: 8px;
-    margin: 1.5rem 0;
+    width: 100%;
     text-align: center;
+    padding: 0.8rem;
+    border-radius: 8px;
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
   }
 
   .button_container {
-    align-items: center;
-    padding-left: 0;
-    flex-direction: row !important;
-    gap: 2rem;
-    margin: 3rem 0 0 0;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  button {
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    background: #f43f5e;
+    color: white;
+    font-weight: 500;
+
+    &:hover {
+      opacity: 0.9;
+    }
   }
 }
-
-// @media screen and (max-width: 550px) {
-//   .container {
-//     width: 100vw;
-//     padding-left: 0;
-//     form {
-//       .messageContainer {
-//         .message {
-//           textarea {
-//             width: 39rem;
-//             height: 15rem;
-//           }
-//         }
-//       }
-//     }
-//   }
-// }
-// @media screen and (max-width: 400px) {
-//   .container {
-//     width: 100vw;
-//     padding-left: 0;
-//     form {
-//       .messageContainer {
-//         margin: 2rem 3rem 2rem 2.5rem;
-//         .message {
-//           textarea {
-//             width: 37rem;
-//             height: 15rem;
-//           }
-//         }
-//       }
-//     }
-//   }
-// }

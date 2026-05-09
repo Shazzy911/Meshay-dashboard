@@ -32,14 +32,14 @@ const formList = [
       () => import("@/components/common/common-forms/song-form/SongForm"),
     ),
   },
-  {
-    key: "playlist",
-    label: "Playlist",
-    component: React.lazy(
-      () =>
-        import("@/components/common/common-forms/playlist-form/PlaylistForm"),
-    ),
-  },
+  // {
+  //   key: "playlist",
+  //   label: "Playlist",
+  //   component: React.lazy(
+  //     () =>
+  //       import("@/components/common/common-forms/playlist-form/PlaylistForm"),
+  //   ),
+  // },
 ];
 
 const Page = () => {
@@ -48,9 +48,6 @@ const Page = () => {
   const ActiveFormComponent = useMemo(() => {
     return formList.find((item) => item.key === activeForm)?.component;
   }, [activeForm]);
-
-  console.log("Current activeForm:", activeForm);
-  console.log("ActiveFormComponent:", ActiveFormComponent);
 
   return (
     <main className={style.container}>
@@ -69,7 +66,6 @@ const Page = () => {
             }`}
             type="button"
             onClick={() => {
-              console.log("Button clicked:", form.key);
               setActiveForm(form.key);
             }}
           >
