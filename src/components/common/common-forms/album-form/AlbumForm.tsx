@@ -6,6 +6,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import ArtistSelect from "@/components/ui/selection/ArtistSelect";
 import { AlbumFormType, AlbumFormData } from "@/types/album";
+import { postAlbum } from "@/lib/api/postAlbum";
 
 const AlbumForm = () => {
   const [successMessage, setSuccessMessage] = useState(false);
@@ -25,11 +26,7 @@ const AlbumForm = () => {
     formData.append("releaseDate", data.releaseDate);
 
     try {
-      const response = await fetch("http://localhost:8000/album", {
-        method: "POST",
-        body: formData,
-      });
-      const result = await response.json();
+      const result = await postAlbum(formData);
       if (result.success) {
         setSuccessMessage(true);
         reset(); // Reset form fields
@@ -38,7 +35,7 @@ const AlbumForm = () => {
         }, 3000); // Hide success message after 3 seconds
       }
     } catch (error) {
-      console.error("Error Posting Contact:", error);
+      console.error("Error Posting Album:", error);
     }
   };
 
@@ -91,7 +88,6 @@ const AlbumForm = () => {
         </div>
 
         <div>
-          <label>Select Artist</label>
           <ArtistSelect register={register} errors={errors} />
           {errors.artistId && <span className={style.error}>Required</span>}
         </div>

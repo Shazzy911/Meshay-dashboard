@@ -5,6 +5,7 @@ import style from "./ArtistForm.module.scss";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArtistFormData, ArtistFormType } from "@/types/artist";
+import { postArtist } from "@/lib/api/postArtist";
 
 const ArtistForm = () => {
   const [successMessage, setSuccessMessage] = useState(false);
@@ -24,11 +25,7 @@ const ArtistForm = () => {
     formData.append("img", data.img[0]);
 
     try {
-      const response = await fetch("http://localhost:8000/artist", {
-        method: "POST",
-        body: formData,
-      });
-      const result = await response.json();
+      const result = await postArtist(formData);
       if (result.success) {
         setSuccessMessage(true);
         reset(); // Reset form fields

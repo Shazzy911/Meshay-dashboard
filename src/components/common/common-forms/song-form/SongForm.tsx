@@ -5,9 +5,10 @@ import style from "./SongForm.module.scss";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import ArtistSelect from "@/components/ui/selection/ArtistSelect";
+import { postSong } from "@/lib/api/postSong";
 
 import { SongFormData, SongFormType } from "@/types/song";
-import SongSelect from "@/components/ui/selection/SongSelect";
+import AlbumSelect from "@/components/ui/selection/AlbumSelect";
 
 const SongForm = () => {
   const [successMessage, setSuccessMessage] = useState(false);
@@ -29,12 +30,8 @@ const SongForm = () => {
     formData.append("songUrl", data.songUrl[0]);
     formData.append("img", data.img[0]);
     try {
-      const response = await fetch("http://localhost:8000/song", {
-        method: "POST",
+      const result = await postSong(formData);
 
-        body: formData,
-      });
-      const result = await response.json();
       if (result.success) {
         setSuccessMessage(true);
         reset(); // Reset form fields
@@ -116,13 +113,11 @@ const SongForm = () => {
         </div>
 
         <div>
-          <label>Select Album</label>
-          <SongSelect register={register} errors={errors} />
+          <AlbumSelect register={register} errors={errors} />
           {errors.albumId && <span className={style.error}>Required</span>}
         </div>
 
         <div>
-          <label>Select Artist</label>
           <ArtistSelect register={register} errors={errors} />
 
           {errors.artistId && <span className={style.error}>Required</span>}

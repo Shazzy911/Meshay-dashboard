@@ -1,12 +1,10 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { FieldErrors, UseFormRegister } from "react-hook-form";
 import { fetchArtists } from "@/lib/api/fetchArtists";
-
-import { UseFormRegister, FieldErrors } from "react-hook-form";
 import { AlbumFormType } from "@/types/album";
 
-// type AlbumFormType = z.infer<typeof AlbumFormData>;
 type Props = {
   register: UseFormRegister<AlbumFormType>;
   errors?: FieldErrors<AlbumFormType>;
@@ -16,6 +14,12 @@ type Artist = {
   name: string;
 };
 
+type ApiResponse = {
+  success: boolean;
+  data: Artist[];
+  message: string;
+};
+
 const ArtistSelect = ({ register, errors }: Props) => {
   const [artists, setArtists] = useState<Artist[]>([]);
   const [loading, setLoading] = useState(true);
@@ -23,10 +27,15 @@ const ArtistSelect = ({ register, errors }: Props) => {
   useEffect(() => {
     const loadArtists = async () => {
       try {
-        const data = await fetchArtists();
-        setArtists(data.response || []);
+        const res: ApiResponse = await fetchArtists();
+
+        console.log("Artists API Response:", res);
+
+        // ✅ FIXED: backend now uses `data`
+        setArtists(res.data || []);
       } catch (error) {
         console.error("Failed to load artists", error);
+        setArtists([]);
       } finally {
         setLoading(false);
       }
@@ -40,10 +49,6 @@ const ArtistSelect = ({ register, errors }: Props) => {
       <label>Select Artist</label>
 
       <select {...register("artistId")} disabled={loading}>
-        <option value="">
-          {loading ? "Loading artists..." : "Select Artist"}
-        </option>
-
         {artists.map((artist) => (
           <option key={artist.id} value={artist.id}>
             {artist.name}

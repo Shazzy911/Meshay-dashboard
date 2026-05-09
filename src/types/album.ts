@@ -4,7 +4,7 @@ export const AlbumFormData = z.object({
   title: z.string().min(1, "Title is required"),
   genre: z.string().min(1, "Genre is required"),
   releaseDate: z.string().min(1, "Release date is required"),
-  artistId: z.string().min(1, "Artist ID is required"),
+  artistId: z.string().min(1, "Artist is required"), // ✅ ADD THIS
   img: z
     .custom<FileList>((value) => value instanceof FileList, {
       message: "Expected a FileList",
