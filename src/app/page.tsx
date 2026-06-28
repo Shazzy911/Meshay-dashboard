@@ -1,4 +1,3 @@
-import React from "react";
 import style from "./page.module.scss";
 // import Slide from "@/components/layout/slide/Slide";
 // const Swiper_Main = React.lazy(

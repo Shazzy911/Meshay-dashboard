@@ -118,7 +118,7 @@ const SongForm = () => {
         </div>
 
         <div>
-          <ArtistSelect register={register} errors={errors} />
+          <ArtistSelect<SongFormType> register={register} errors={errors} />
 
           {errors.artistId && <span className={style.error}>Required</span>}
         </div>

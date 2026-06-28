@@ -1,14 +1,19 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { FieldErrors, UseFormRegister } from "react-hook-form";
+import {
+  FieldErrors,
+  FieldValues,
+  Path,
+  UseFormRegister,
+} from "react-hook-form";
 import { fetchArtists } from "@/lib/api/fetchArtists";
-import { AlbumFormType } from "@/types/album";
 
-type Props = {
-  register: UseFormRegister<AlbumFormType>;
-  errors?: FieldErrors<AlbumFormType>;
+type Props<T extends FieldValues> = {
+  register: UseFormRegister<T>;
+  errors?: FieldErrors<T>;
 };
+
 type Artist = {
   id: string;
   name: string;
@@ -20,7 +25,10 @@ type ApiResponse = {
   message: string;
 };
 
-const ArtistSelect = ({ register, errors }: Props) => {
+const ArtistSelect = <T extends FieldValues>({
+  register,
+  errors,
+}: Props<T>) => {
   const [artists, setArtists] = useState<Artist[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -28,10 +36,6 @@ const ArtistSelect = ({ register, errors }: Props) => {
     const loadArtists = async () => {
       try {
         const res: ApiResponse = await fetchArtists();
-
-        console.log("Artists API Response:", res);
-
-        // ✅ FIXED: backend now uses `data`
         setArtists(res.data || []);
       } catch (error) {
         console.error("Failed to load artists", error);
@@ -48,7 +52,15 @@ const ArtistSelect = ({ register, errors }: Props) => {
     <div>
       <label>Select Artist</label>
 
-      <select {...register("artistId")} disabled={loading}>
+      <select
+        defaultValue=""
+        {...register("artistId" as Path<T>)}
+        disabled={loading}
+      >
+        <option value="" disabled>
+          Select an artist
+        </option>
+
         {artists.map((artist) => (
           <option key={artist.id} value={artist.id}>
             {artist.name}
@@ -56,7 +68,7 @@ const ArtistSelect = ({ register, errors }: Props) => {
         ))}
       </select>
 
-      {errors?.artistId && <span style={{ color: "red" }}>Required</span>}
+      {errors?.["artistId"] && <span style={{ color: "red" }}>Required</span>}
     </div>
   );
 };
