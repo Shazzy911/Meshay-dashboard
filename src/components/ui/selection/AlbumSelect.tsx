@@ -2,13 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { fetchAlbums } from "@/lib/api/fetchAlbum";
+import { FieldErrors, Path, UseFormRegister } from "react-hook-form";
 
-import { UseFormRegister, FieldErrors } from "react-hook-form";
-import { AlbumFormType } from "@/types/album";
+type HasAlbumId = {
+  albumId: string;
+};
 
-type Props = {
-  register: UseFormRegister<AlbumFormType>;
-  errors?: FieldErrors<AlbumFormType>;
+type Props<T extends HasAlbumId> = {
+  register: UseFormRegister<T>;
+  errors?: FieldErrors<T>;
 };
 
 type Album = {
@@ -16,7 +18,7 @@ type Album = {
   title: string;
 };
 
-const AlbumSelect = ({ register, errors }: Props) => {
+const AlbumSelect = <T extends HasAlbumId>({ register, errors }: Props<T>) => {
   const [albums, setAlbums] = useState<Album[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -24,13 +26,10 @@ const AlbumSelect = ({ register, errors }: Props) => {
     const loadAlbums = async () => {
       try {
         const res = await fetchAlbums();
-
-        console.log("API RESPONSE:", res);
-
-        // IMPORTANT FIX HERE 👇
         setAlbums(res.data || []);
       } catch (error) {
         console.error("Failed to load albums", error);
+        setAlbums([]);
       } finally {
         setLoading(false);
       }
@@ -43,9 +42,13 @@ const AlbumSelect = ({ register, errors }: Props) => {
     <div>
       <label>Select Album</label>
 
-      <select {...register("albumId")} disabled={loading}>
-        <option value="">
-          {loading ? "Loading albums..." : "Select Album"}
+      <select
+        defaultValue=""
+        {...register("albumId" as Path<T>)}
+        disabled={loading}
+      >
+        <option value="" disabled>
+          Select Album
         </option>
 
         {albums.map((album) => (

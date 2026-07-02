@@ -88,7 +88,7 @@ const AlbumForm = () => {
         </div>
 
         <div>
-          <ArtistSelect register={register} errors={errors} />
+          <ArtistSelect<AlbumFormType> register={register} errors={errors} />
           {errors.artistId && <span className={style.error}>Required</span>}
         </div>
       </div>

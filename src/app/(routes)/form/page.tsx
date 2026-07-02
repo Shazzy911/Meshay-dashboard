@@ -19,6 +19,14 @@ const formList = [
     ),
   },
   {
+    key: "artistimages",
+    label: "Artist Images",
+    component: React.lazy(
+      () =>
+        import("@/components/common/common-forms/artist-images-form/ArtistImagesForm"),
+    ),
+  },
+  {
     key: "album",
     label: "Album",
     component: React.lazy(

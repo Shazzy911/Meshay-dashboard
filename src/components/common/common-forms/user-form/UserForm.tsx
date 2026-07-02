@@ -3,16 +3,9 @@ import React, { useState } from "react";
 import Button from "@/components/ui/button/Button";
 import style from "./UserForm.module.scss";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-const UserFormSchema = z.object({
-  username: z.string(),
-  email: z.string().email(),
-  password: z.string().min(6).max(15),
-});
-
-type UserFormType = z.infer<typeof UserFormSchema>;
+import { UserFormData, UserFormType } from "@/types/user";
+import { postUser } from "@/lib/api/postUser";
 
 const UserForm = () => {
   const [successMessage, setSuccessMessage] = useState(false);
@@ -21,27 +14,38 @@ const UserForm = () => {
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<UserFormType>({ resolver: zodResolver(UserFormSchema) });
+  } = useForm<UserFormType>({ resolver: zodResolver(UserFormData) });
 
   const onSubmit: SubmitHandler<UserFormType> = async (data) => {
     try {
-      const response = await fetch("http://localhost:8000/user", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-      const result = await response.json();
+      const formData = new FormData();
+
+      formData.append("username", data.username);
+      formData.append("email", data.email);
+
+      if (data.password) {
+        formData.append("password", data.password);
+      }
+
+      formData.append("provider", data.provider);
+
+      if (data.providerId) {
+        formData.append("providerId", data.providerId);
+      }
+
+      const result = await postUser(formData);
+
       if (result.success) {
         setSuccessMessage(true);
-        reset(); // Reset form fields
+
+        reset();
+
         setTimeout(() => {
           setSuccessMessage(false);
-        }, 3000); // Hide success message after 3 seconds
+        }, 3000);
       }
     } catch (error) {
-      console.error("Error Posting Contact:", error);
+      console.error("Error Posting User:", error);
     }
   };
 
